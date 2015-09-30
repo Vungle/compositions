@@ -1,0 +1,55 @@
+hekad_stats:
+  image: vungle/heka-statsd
+  links:
+    - kafka:kafka
+  restart: always
+  expose:
+    - "8125"
+  ports: 
+    - "8125:8125/udp"
+    
+zookeeper:
+  image: vungle/zookeeper
+  ports: 
+    - "2181"
+kafka: 
+  image: vungle/kafka
+  ports:
+    - "9092"
+  links: 
+    - zookeeper:zk
+  environment:
+    KAFKA_CREATE_TOPICS: "inf-statsd:1:1"
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    
+grafana:
+  image: grafana/grafana
+  ports:
+    - "3000:3000"
+  links:
+    - influxdb:influxdb
+  restart: always
+  environment:
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+    - GF_SERVER_ROOT_URL=http://grafana.server.name
+
+influxdb:
+  image: tutum/influxdb
+  ports:
+    - "8086:8086"
+    - "8083:8083"
+  expose:
+    - "8090"
+    - "8099"
+  volumes:
+    - "/var/influxdb:/data"
+  environment:
+    - PRE_CREATE_DB=stats
+
+heka-influx:
+  image: vungle/heka-influx
+  restart: always
+  links:
+    - kafka:kafka
+    - influxdb:influxdb
