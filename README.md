@@ -13,7 +13,7 @@
 
 ## Access Grafana
 
-`docker_machine_ip:300` login as admin/admin`
+`docker_machine_ip:300` login as admin/admin
 
 ## Add the influx db as your data source
 
