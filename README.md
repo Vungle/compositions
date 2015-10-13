@@ -28,3 +28,7 @@ DB Pass: `root`
 ## Test
 
 Send a test metric `echo "deploys.adserver.myservice:1|c" | nc -w 1 -u docker_machine_ip 8125`
+
+## Validate
+
+To validate the stats are being picked up do: `docker-compose logs statsd` and you should get a stream of stats coming in.
