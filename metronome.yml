@@ -1,6 +1,6 @@
 statsd:
   image: vungle/heka-statsd-to-influx
-  port:
+  ports:
     - "8125:8125"
   links:
     - influxdb:influxdb
