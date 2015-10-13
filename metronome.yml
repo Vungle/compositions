@@ -1,27 +1,13 @@
-hekad_stats:
-  image: vungle/heka-statsd
+statsd:
+  image: vungle/heka-statsd-to-influx
+  port:
+    - "8125:8125"
   links:
-    - kafka:kafka
-  restart: always
-  expose:
-    - "8125"
-  ports: 
-    - "8125:8125/udp"
-    
-zookeeper:
-  image: vungle/zookeeper
-  ports: 
-    - "2181"
-kafka: 
-  image: vungle/kafka
-  ports:
-    - "9092"
-  links: 
-    - zookeeper:zk
+    - influxdb:influxdb
   environment:
-    KAFKA_CREATE_TOPICS: "inf-statsd:1:1"
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+    - INFLUX_HOST=http://influxdb:8086/write?db=stats&precision=s
+    - INFLUX_USERNAME=root
+    - INFLUX_PASS=root
     
 grafana:
   image: grafana/grafana
@@ -46,10 +32,3 @@ influxdb:
     - "/var/influxdb:/data"
   environment:
     - PRE_CREATE_DB=stats
-
-heka-influx:
-  image: vungle/heka-influx
-  restart: always
-  links:
-    - kafka:kafka
-    - influxdb:influxdb
